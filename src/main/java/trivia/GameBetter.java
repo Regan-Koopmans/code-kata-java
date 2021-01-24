@@ -1,28 +1,27 @@
 package trivia;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 public class GameBetter implements IGame {
-   ArrayList players = new ArrayList();
+   ArrayList<String> players = new ArrayList<>();
    int[] places = new int[6];
    int[] purses = new int[6];
    boolean[] inPenaltyBox = new boolean[6];
 
-   LinkedList popQuestions = new LinkedList();
-   LinkedList scienceQuestions = new LinkedList();
-   LinkedList sportsQuestions = new LinkedList();
-   LinkedList rockQuestions = new LinkedList();
+   ArrayList<String> popQuestions = new ArrayList<>();
+   ArrayList<String> scienceQuestions = new ArrayList<>();
+   ArrayList<String> sportsQuestions = new ArrayList<>();
+   ArrayList<String> rockQuestions = new ArrayList<>();
 
    int currentPlayer = 0;
    boolean isGettingOutOfPenaltyBox;
 
    public GameBetter() {
       for (int i = 0; i < 50; i++) {
-         popQuestions.addLast("Pop Question " + i);
-         scienceQuestions.addLast(("Science Question " + i));
-         sportsQuestions.addLast(("Sports Question " + i));
-         rockQuestions.addLast(createRockQuestion(i));
+         popQuestions.add("Pop Question " + i);
+         scienceQuestions.add(("Science Question " + i));
+         sportsQuestions.add(("Sports Question " + i));
+         rockQuestions.add(createRockQuestion(i));
       }
    }
 
@@ -88,28 +87,28 @@ public class GameBetter implements IGame {
    }
 
    private void askQuestion() {
-      if (currentCategory() == "Pop")
+      if (currentCategory() == Category.POP)
          System.out.println(popQuestions.removeFirst());
-      if (currentCategory() == "Science")
+      if (currentCategory() == Category.SCIENCE)
          System.out.println(scienceQuestions.removeFirst());
-      if (currentCategory() == "Sports")
+      if (currentCategory() == Category.SPORTS)
          System.out.println(sportsQuestions.removeFirst());
-      if (currentCategory() == "Rock")
+      if (currentCategory() == Category.ROCK)
          System.out.println(rockQuestions.removeFirst());
    }
 
 
-   private String currentCategory() {
-      if (places[currentPlayer] == 0) return "Pop";
-      if (places[currentPlayer] == 4) return "Pop";
-      if (places[currentPlayer] == 8) return "Pop";
-      if (places[currentPlayer] == 1) return "Science";
-      if (places[currentPlayer] == 5) return "Science";
-      if (places[currentPlayer] == 9) return "Science";
-      if (places[currentPlayer] == 2) return "Sports";
-      if (places[currentPlayer] == 6) return "Sports";
-      if (places[currentPlayer] == 10) return "Sports";
-      return "Rock";
+   private Category currentCategory() {
+      if (places[currentPlayer] == 0) return Category.POP;
+      if (places[currentPlayer] == 4) return Category.POP;
+      if (places[currentPlayer] == 8) return Category.POP;
+      if (places[currentPlayer] == 1) return Category.SCIENCE;
+      if (places[currentPlayer] == 5) return Category.SCIENCE;
+      if (places[currentPlayer] == 9) return Category.SCIENCE;
+      if (places[currentPlayer] == 2) return Category.SPORTS;
+      if (places[currentPlayer] == 6) return Category.SPORTS;
+      if (places[currentPlayer] == 10) return Category.SPORTS;
+      return Category.ROCK;
    }
 
    public boolean wasCorrectlyAnswered() {
