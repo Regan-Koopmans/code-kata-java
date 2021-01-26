@@ -1,24 +1,26 @@
 package trivia;
 
+import trivia.localization.EnglishPhrases;
+import trivia.localization.LocalizedPhrases;
 import trivia.logging.Logger;
 import trivia.logging.TerminalLogger;
 import trivia.question.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class GameBetter implements IGame {
 
-    ArrayList<String> players = new ArrayList<>();
-    int[] places = new int[6];
-    int[] purses = new int[6];
-    boolean[] inPenaltyBox = new boolean[6];
+    private static final Map<Integer, Category> positionCategoryMapping = initializePositionCategoryMapping();
+    private final Map<Category, QuestionQueue> categorizedQuestions = new HashMap<>();
+    private final ArrayList<Player> players = new ArrayList<>();
 
-    HashMap<Category, QuestionQueue> categorizedQuestions = new HashMap<>();
-
-    int currentPlayer = 0;
-    boolean isGettingOutOfPenaltyBox;
-    Logger logger;
+    private boolean isGettingOutOfPenaltyBox;
+    private final LocalizedPhrases phrases;
+    private int currentPlayerIndex = 0;
+    private Player currentPlayer;
+    private final Logger logger;
 
     public GameBetter() {
         QuestionQueue popQuestions = new QuestionQueue();
@@ -36,135 +38,84 @@ public class GameBetter implements IGame {
         categorizedQuestions.put(Category.SPORTS, sportsQuestions);
         categorizedQuestions.put(Category.ROCK, rockQuestions);
         this.logger = new TerminalLogger();
+        this.phrases = new EnglishPhrases();
     }
 
     public boolean isPlayable() {
-        return (howManyPlayers() >= 2);
+        return (players.size() >= 2);
     }
 
     public boolean add(String playerName) {
-        players.add(playerName);
-        places[howManyPlayers()] = 0;
-        purses[howManyPlayers()] = 0;
-        inPenaltyBox[howManyPlayers()] = false;
-        logger.log(playerName + " was added");
-        logger.log("They are player number " + players.size());
+        players.add(new Player(playerName));
+        logger.log(phrases.playerAdded(playerName));
+        logger.log(phrases.playerNumber(players.size()));
         return true;
-    }
-
-    public int howManyPlayers() {
-        return players.size();
     }
 
     public void roll(int roll) {
-        logger.log(players.get(currentPlayer) + " is the current player");
-        logger.log("They have rolled a " + roll);
+        currentPlayer = players.get(currentPlayerIndex);
+        logger.log(phrases.currentPlayer(currentPlayer.getName()));
+        logger.log(phrases.playerRolled(roll));
 
-        if (inPenaltyBox[currentPlayer]) {
-            if (roll % 2 != 0) {
-                isGettingOutOfPenaltyBox = true;
-
-                logger.log(players.get(currentPlayer) + " is getting out of the penalty box");
-                places[currentPlayer] = places[currentPlayer] + roll;
-                if (places[currentPlayer] > 11) places[currentPlayer] = places[currentPlayer] - 12;
-
-                logger.log(players.get(currentPlayer)
-                        + "'s new location is "
-                        + places[currentPlayer]);
-                logger.log("The category is " + getCurrentCategory(places[currentPlayer]));
-                askQuestion();
-            } else {
-                logger.log(players.get(currentPlayer) + " is not getting out of the penalty box");
+        if (currentPlayer.isInPenaltyBox()) {
+            if (roll % 2 == 0) {
+                logger.log(phrases.willNotLeavePenalty(currentPlayer.getName()));
                 isGettingOutOfPenaltyBox = false;
+                return;
+            } else {
+                logger.log(phrases.willLeavePenalty(currentPlayer.getName()));
+                isGettingOutOfPenaltyBox = true;
             }
-
-        } else {
-
-            places[currentPlayer] = places[currentPlayer] + roll;
-            if (places[currentPlayer] > 11) places[currentPlayer] = places[currentPlayer] - 12;
-
-            logger.log(players.get(currentPlayer)
-                    + "'s new location is "
-                    + places[currentPlayer]);
-            logger.log("The category is " + getCurrentCategory(places[currentPlayer]));
-            askQuestion();
         }
 
+        currentPlayer.move(roll);
+        logger.log(phrases.newLocation(currentPlayer.getName(), currentPlayer.getPlace()));
+        logger.log(phrases.newCategory(getCurrentCategory(currentPlayer).toString()));
+        askQuestion();
     }
 
     private void askQuestion() {
-        categorizedQuestions.get(getCurrentCategory(places[currentPlayer])).next().ask(logger);
+        categorizedQuestions.get(getCurrentCategory(currentPlayer)).next().ask(logger);
     }
 
-    private Category getCurrentCategory(int position) {
-        switch (position) {
-            case 0:
-            case 4:
-            case 8:
-                return Category.POP;
-            case 1:
-            case 5:
-            case 9:
-                return Category.SCIENCE;
-            case 2:
-            case 6:
-            case 10:
-                return Category.SPORTS;
-            default:
-                return Category.ROCK;
-        }
+    private Category getCurrentCategory(Player player) {
+        return positionCategoryMapping.get(player.getPlace() % 4);
     }
 
     public boolean wasCorrectlyAnswered() {
-        if (inPenaltyBox[currentPlayer]) {
-            if (isGettingOutOfPenaltyBox) {
-                logger.log("Answer was correct!!!!");
-                purses[currentPlayer]++;
-                logger.log(players.get(currentPlayer)
-                        + " now has "
-                        + purses[currentPlayer]
-                        + " Gold Coins.");
-
-                boolean winner = didPlayerWin();
-                currentPlayer++;
-                if (currentPlayer == players.size()) currentPlayer = 0;
-
-                return winner;
-            } else {
-                currentPlayer++;
-                if (currentPlayer == players.size()) currentPlayer = 0;
-                return true;
-            }
-
-
-        } else {
-
-            logger.log("Answer was corrent!!!!");
-            purses[currentPlayer]++;
-            logger.log(players.get(currentPlayer)
-                    + " now has "
-                    + purses[currentPlayer]
-                    + " Gold Coins.");
-
-            boolean winner = didPlayerWin();
-            currentPlayer++;
-            if (currentPlayer == players.size()) currentPlayer = 0;
-
-            return winner;
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+        if (currentPlayer.isInPenaltyBox() && !isGettingOutOfPenaltyBox) {
+            return true;
         }
+
+        if (currentPlayer.isInPenaltyBox() && isGettingOutOfPenaltyBox) {
+            logger.log(phrases.correctAnswer());
+        } else {
+            logger.log(phrases.correctAnswerLegacy());
+        }
+        currentPlayer.addCoin();
+        logger.log(phrases.coinStatus(currentPlayer.getName(), currentPlayer.getCoins()));
+        return didPlayerWin(currentPlayer);
     }
 
     public boolean wrongAnswer() {
-        logger.log("Question was incorrectly answered");
-        logger.log(players.get(currentPlayer) + " was sent to the penalty box");
-        inPenaltyBox[currentPlayer] = true;
-
-        currentPlayer++;
-        if (currentPlayer == players.size()) currentPlayer = 0;
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+        logger.log(phrases.incorrectAnswer());
+        logger.log(phrases.wentToPenalty(currentPlayer.getName()));
+        currentPlayer.putInPenaltyBox();
         return true;
     }
-    
-    private boolean didPlayerWin() {
-        return !(purses[currentPlayer] == 6);
+
+    private boolean didPlayerWin(Player player) {
+        return player.getCoins() != 6;
+    }
+
+    private static Map<Integer, Category> initializePositionCategoryMapping() {
+        HashMap<Integer, Category> result = new HashMap<>();
+        result.put(0, Category.POP);
+        result.put(1, Category.SCIENCE);
+        result.put(2, Category.SPORTS);
+        result.put(3, Category.ROCK);
+        return result;
     }
 }

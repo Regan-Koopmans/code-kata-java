@@ -13,8 +13,7 @@ public class Player {
 	public boolean isInPenaltyBox() {
 		return inPenaltyBox;
 	}
-	
-	
+
 	// TODO unde e moveOut?!!
 	public void putInPenaltyBox() {
 		this.inPenaltyBox = true;
@@ -31,8 +30,7 @@ public class Player {
 			place -= 12;
 		}
 	}
-	
-	
+
 	public String getName() {
 		return name;
 	}
@@ -45,5 +43,7 @@ public class Player {
 		coins ++;
 	}
 	
-	
+	public String toString() {
+		return name;
+	}
 }
