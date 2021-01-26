@@ -1,6 +1,7 @@
 package trivia.question;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 public class QuestionQueue {
@@ -9,6 +10,10 @@ public class QuestionQueue {
 
     public QuestionQueue() {
         this.questions = new LinkedList<>();
+    }
+
+    public QuestionQueue(List<Question> provided) {
+       this.questions = new LinkedList<>(provided);
     }
 
     public void add(Question question) {

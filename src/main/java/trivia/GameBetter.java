@@ -9,9 +9,12 @@ import trivia.question.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class GameBetter implements IGame {
 
+    private static final int NUMBER_OF_QUESTIONS = 50;
     private static final Map<Integer, Category> positionCategoryMapping = initializePositionCategoryMapping();
     private final Map<Category, QuestionQueue> categorizedQuestions = new HashMap<>();
     private final ArrayList<Player> players = new ArrayList<>();
@@ -23,20 +26,15 @@ public class GameBetter implements IGame {
     private final Logger logger;
 
     public GameBetter() {
-        QuestionQueue popQuestions = new QuestionQueue();
-        QuestionQueue scienceQuestions = new QuestionQueue();
-        QuestionQueue sportsQuestions = new QuestionQueue();
-        QuestionQueue rockQuestions = new QuestionQueue();
-        for (int i = 0; i < 50; i++) {
-            popQuestions.add(new Question("Pop Question " + i));
-            scienceQuestions.add(new Question("Science Question " + i));
-            sportsQuestions.add(new Question("Sports Question " + i));
-            rockQuestions.add(new Question("Rock Question " + i));
+        for (Category category : Category.values()) {
+            categorizedQuestions.put(
+                    category,
+                    new QuestionQueue(IntStream.range(0, NUMBER_OF_QUESTIONS)
+                            .mapToObj(
+                                    i -> new Question(
+                                            String.format("%s Question %d", category.toString(), i)))
+                            .collect(Collectors.toList())));
         }
-        categorizedQuestions.put(Category.POP, popQuestions);
-        categorizedQuestions.put(Category.SCIENCE, scienceQuestions);
-        categorizedQuestions.put(Category.SPORTS, sportsQuestions);
-        categorizedQuestions.put(Category.ROCK, rockQuestions);
         this.logger = new TerminalLogger();
         this.phrases = new EnglishPhrases();
     }
