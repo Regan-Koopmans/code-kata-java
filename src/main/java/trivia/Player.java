@@ -3,11 +3,14 @@ package trivia;
 public class Player {
 	private final String name;
 	private int place;
-	private int coins;
+	private int purse;
 	private boolean inPenaltyBox;
 	
 	public Player(String name) {
 		this.name = name;
+		this.place = 0;
+		this.purse = 0;
+		this.inPenaltyBox = false;
 	}
 	
 	public boolean isInPenaltyBox() {
@@ -37,13 +40,18 @@ public class Player {
 		return name;
 	}
 	
-	public int getCoins() {
-		return coins;
+	public int getPurse() {
+		return purse;
 	}
 	
-	public void addCoin() {
-		coins ++;
+	public void addPurse() {
+		purse++;
 	}
-	
-	
+
+	public int roll(int value) {
+		place = place + value;
+		if (place > 11) place = place - 12;
+
+		return place;
+	}
 }
