@@ -14,9 +14,12 @@ public class Player {
 		return inPenaltyBox;
 	}
 
-	// TODO unde e moveOut?!!
 	public void putInPenaltyBox() {
 		this.inPenaltyBox = true;
+	}
+
+	public void takeOutPenaltyBox() {
+		this.inPenaltyBox = false;
 	}
 
 	public int getPlace() {
@@ -24,11 +27,7 @@ public class Player {
 	}
 	
 	public void move(int roll) {
-//		place = (place + roll) % 12;
-		place += roll;
-		if (place >= 12) {
-			place -= 12;
-		}
+		place = (place + roll) % 12;
 	}
 
 	public String getName() {

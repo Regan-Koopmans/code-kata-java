@@ -13,7 +13,7 @@ public class GameTest {
 
 
 	@Test
-	public void characterizationTest() {
+	public void caracterizationTest() {
 		for (int seed = 1; seed < 10_000; seed++) {
 			String expectedOutput = extractOutput(new Random(seed), new Game());
 			String actualOutput = extractOutput(new Random(seed), new GameBetter());
