@@ -41,10 +41,6 @@ public class GameBetter implements IGame {
         this.phrases = new EnglishPhrases();
     }
 
-    public boolean isPlayable() {
-        return (players.size() >= 2);
-    }
-
     public boolean add(String playerName) {
         players.add(new Player(playerName));
         logger.log(phrases.playerAdded(playerName));
