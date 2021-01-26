@@ -2,8 +2,15 @@ package trivia.question;
 
 import trivia.logging.Logger;
 
-public interface Question {
+public class Question {
 
-    boolean ask(Logger log);
+    private final String question;
 
+    public Question(String question) {
+        this.question = question;
+    }
+
+    public void ask(Logger logger) {
+        logger.log(question);
+    }
 }

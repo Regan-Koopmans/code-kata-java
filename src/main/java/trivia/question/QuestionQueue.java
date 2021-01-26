@@ -9,7 +9,6 @@ public class QuestionQueue {
 
     public QuestionQueue() {
         this.questions = new LinkedList<>();
-
     }
 
     public void add(Question question) {
