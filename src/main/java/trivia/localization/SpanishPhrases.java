@@ -13,22 +13,22 @@ public class SpanishPhrases implements LocalizedPhrases {
 
     @Override
     public String playerNumber(int number) {
-        return "Ellos son numero de jugador " + number;
+        return "Son el jugador numero " + number;
     }
 
     @Override
     public String playerRolled(int roll) {
-        return "Ellos han rodado un " + roll;
+        return "Han sacado un " + roll;
     }
 
     @Override
     public String correctAnswer() {
-        return "La respuesta fue correcta!!!!";
+        return "La respuesta es correcta!!!!";
     }
 
     @Override
     public String correctAnswerLegacy() {
-        return "La respuesta fue correcta!!!!";
+        return "La respuesta es correcta!!!!";
     }
 
     @Override
@@ -48,12 +48,12 @@ public class SpanishPhrases implements LocalizedPhrases {
 
     @Override
     public String willNotLeavePenalty(String name) {
-        return name + " no sale del área de penalti";
+        return name + " no podra salir del área de penalización";
     }
 
     @Override
     public String wentToPenalty(String name) {
-        return name + " fue enviado al área de penalti";
+        return name + " fue enviado al área de penalización";
     }
 
     @Override
@@ -63,6 +63,6 @@ public class SpanishPhrases implements LocalizedPhrases {
 
     @Override
     public String willLeavePenalty(String name) {
-        return name + " sale del área de penalti";
+        return name + " sale del área de penalización";
     }
 }
