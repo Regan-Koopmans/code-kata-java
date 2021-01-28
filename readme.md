@@ -23,4 +23,4 @@ Do you best until you're *proud* of this code!
 
 PS: you ARE allowed to make assumptions regarding the code to simplify it. 
 Just list those assumptions in this file, below:
-- 
+- The minimum player count is 1. 
